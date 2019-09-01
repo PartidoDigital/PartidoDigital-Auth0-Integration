@@ -20,6 +20,10 @@ module.exports = wt.fromExpress((req, res) => {
   app.use(bodyParser.urlencoded({
     extended: true
   })); 
+
+  app.get("/test", (req, res) => {
+    res.status(200).send("OK!");
+  });
   
   // todas las rutas requieren la verificación del json web token
   app.use(jwt({
@@ -30,7 +34,7 @@ module.exports = wt.fromExpress((req, res) => {
       secret: req.webtaskContext.secrets.CLIENT_SECRET,
       audience: req.webtaskContext.secrets.CLIENT_ID,
       issuer: `https://${req.webtaskContext.secrets.AUTH0_DOMAIN}/`
-  }).unless({path: ['/test']}));
+  }).unless({path: '/handle-user-metadata/test'}));
   
   // se procede a chequear que no existe ese usuario en el sistema
   // si llega a existir el primer nombre de usuario, se procede a agregar un número (empezando por 1) y se vuelve a chequear
@@ -62,10 +66,6 @@ module.exports = wt.fromExpress((req, res) => {
       }
       return out + splitFullname[splitFullname.length - 1];
   };
-  
-  app.get("/test", (req, res) => {
-    res.status(200).send("OK!");
-  });
   
   // este endpoint es para poder agregar un campo full_name que representa el nombre completo de la persona
   // se espera información en el cuerpo del request ya que se espera que se utilice un formulario con método POST
